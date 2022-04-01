@@ -9,7 +9,8 @@ The python packages for the hash functions have to be installed manually.
 ## How to Use
 Simple call to run the bloom filter:  
 ```$ python bloom.py```  
-Then filter is created with a default size of 16 and set to manual & insertion mode, meaning that everything that is typed in the command line will be added to the filter.  
+Then filter is created with all default parameters.  
+Size of 16 (= 2^4), set to manual & insertion mode, meaning that everything that is typed in the command line will be added to the filter, and with non-cryptographic hash functions.
 
 ### Manual Mode
 ```$ !c <some_item>``` activates checking mode and it checks whether ```<some_item>``` is in the filter. Everything entered in the command line from now on is checked against the content of the filter and not added to it. In order to add more items to the filter insertion mode has to be switched back on again with the following command: ```$ !i```  
