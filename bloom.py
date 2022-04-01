@@ -1,5 +1,6 @@
 from bitarray import bitarray
 import argparse
+import hashlib
 
 # non-cryptographic hash functions
 import mmh3 #https://pypi.org/project/mmh3/
@@ -8,7 +9,7 @@ import jenkins_cffi as jenkins #https://github.com/what-studio/jenkins-cffi/
 from pearhash import PearsonHasher #https://github.com/ze-phyr-us/pearhash
 
 
-crypto_hash_list = [] #md5, sha
+crypto_hash_list = ["md5", "blake2s", "sha256", "sha512", "sha3-256"] #md5, sha
 non_crpyto_hash_list = ["murmur", "fnv", "jenkins", "pearson", "hex"] # fnv = fowler-noll-vo
 
 
@@ -24,7 +25,40 @@ class bloom_filter:
         self.filter_array = bitarray([0] * 2**array_size_exponent)
         self.array_size_exponent = array_size_exponent
         self.num_hash_functions = num_hash_functions
-        #print(self.filter_array, "size:", 2**array_size_exponent)
+        
+        # only instanciate once for (non-cryptographic) Pearson-hash
+        self.pearson_hasher = PearsonHasher(self.array_size_exponent) 
+
+        if is_cryptographic: #TODO insert cryptographic hash functions
+            self.switch = {
+                0: self.get_md5,
+                1: self.get_blake2s,
+                2: self.get_sha256,
+                3: self.get_sha512,
+                4: self.get_sha3_256
+            }
+            self.verbose_switch = {
+                0: "MD5     ",
+                1: "BLAKE2s ",
+                2: "SHA256  ",
+                3: "SHA512  ",
+                4: "SHA3-256"
+            }
+        else:
+            self.switch = {
+                0: self.get_murmur,
+                1: self.get_fnv,
+                2: self.get_jenkins,
+                3: self.get_pearson,
+                4: self.get_hex
+            }
+            self.verbose_switch = {
+                0: "Murmur  ",
+                1: "FNV     ",
+                2: "Jenkins ",
+                3: "Pearson ",
+                4: "Hex     "
+            }
     
 
     def print_filter(self):
@@ -34,75 +68,76 @@ class bloom_filter:
         bloom_filter.verbose = not bloom_filter.verbose
         print("verbose toggled to", bloom_filter.verbose)
 
+
     def insert(self, item):
-        murmur_position = self.get_murmur(item)
-        fnv_position = self.get_fnv(item)
-        jenkins_position = self.get_jenkins(item)
-        pearson_position = self.get_pearson(item)
-        hex_position = self.get_hex(item)
-
-        if bloom_filter.verbose:
-            print("insert", item)
-            print("murmur ", murmur_position)
-            print("fnv    ", fnv_position)
-            print("jenkins", jenkins_position)
-            print("pearson", pearson_position)
-            print("hex    ", hex_position)
-        
-
-        self.filter_array[murmur_position] = 1
-        self.filter_array[fnv_position] = 1
-        self.filter_array[jenkins_position] = 1
-        self.filter_array[pearson_position] = 1
-        self.filter_array[hex_position] = 1
-
-
-        #TODO only use specific hash functions
-        #TODO also for cryptographic hash functions
-
+        for hash_f_index in range(self.num_hash_functions):
+            cell_position = self.switch[hash_f_index](item)
+            if bloom_filter.verbose: print(self.verbose_switch[hash_f_index], cell_position)
+            self.filter_array[cell_position] = 1
 
     def check(self, item):
-        murmur_position = self.get_murmur(item)
-        fnv_position = self.get_fnv(item)
-        jenkins_position = self.get_jenkins(item)
-        pearson_position = self.get_pearson(item)
-        hex_position = self.get_hex(item)
-
         if bloom_filter.verbose: print("check", item)
-        
-        return (self.filter_array[murmur_position] and
-                self.filter_array[fnv_position] and
-                self.filter_array[jenkins_position] and
-                self.filter_array[pearson_position] and
-                self.filter_array[hex_position])
+        for hash_f_index in range(self.num_hash_functions):
+            cell_position = self.switch[hash_f_index](item)
+            if bloom_filter.verbose: print(self.verbose_switch[hash_f_index], cell_position)
+            if not self.filter_array[cell_position]: return False
+        return True
 
 
+    """
+    cryptographic hash functions
+    info about cryptographic hash functions:
+    https://cryptobook.nakov.com/cryptographic-hash-functions/secure-hash-algorithms
+    """
+    # used to be the most used cryptographic hash
+    def get_md5(self, input):
+        md5_hash = hashlib.md5(input.encode("utf-8")).hexdigest()
+        return self.position_from_hex(md5_hash)
+
+    # apparently faster than all SHA and as secure as SHA3
+    def get_blake2s(self, input):
+        blake2s_hash = hashlib.blake2s(input.encode("utf-8")).hexdigest()
+        return self.position_from_hex(blake2s_hash)
+
+    # SHA version 2 with 256bit; used in Bitcoin protocol
+    def get_sha256(self, input):
+        sha256_hash = hashlib.sha256(input.encode("utf-8")).hexdigest()
+        return self.position_from_hex(sha256_hash)
+
+    # SHA version 2 with 512bit
+    def get_sha512(self, input):
+        sha512_hash = hashlib.sha512(input.encode("utf-8")).hexdigest()
+        return self.position_from_hex(sha512_hash)
+
+    # SHA version 3; Keccak (slight derivation) used in Ethereum protocol
+    def get_sha3_256(self, input):
+        sha3_256_hash = hashlib.sha3_256(input.encode("utf-8")).hexdigest()
+        return self.position_from_hex(sha3_256_hash)
+    
+
+    """ non-cryptographic hash functions """
     def get_murmur(self, input):
         murmur_hash = mmh3.hash(input, signed=False)
-        #print("murmur", murmur_hash)
         return self.position_from_int(murmur_hash)
 
     def get_fnv(self, input):
         fnv_hash = hex(fnv1a_32(input.encode()))
-        #print("fnv", fnv_hash, "fnv int", int(fnv_hash, 16))
         return self.position_from_hex(fnv_hash)
 
     def get_jenkins(self, input):
         jenkins_hash = jenkins.hashlittle(input.encode())
-        #print("jenkins", jenkins_hash)
         return self.position_from_int(jenkins_hash)
 
     def get_pearson(self, input):
-        pearson_hasher = PearsonHasher(self.array_size_exponent) # Set desired hash length in bytes.
-        pearson_hash = pearson_hasher.hash(input.encode()).hexdigest()
-        #print("pearson", pearson_hash, "pearson int", int(pearson_hash, 16))
+        pearson_hash = self.pearson_hasher.hash(input.encode()).hexdigest()
         return self.position_from_hex(pearson_hash)
         
     def get_hex(self, input):
-        hex_value = input.encode('utf-8').hex() #hex(item)
-        #print("hex_value", hex_value, "hex to int", int(hex_value, 16)
+        hex_value = input.encode('utf-8').hex()
         return self.position_from_hex(hex_value)
 
+
+    """ return cell positons for the filter """
     def position_from_hex(self, hex):
         return int(hex, 16)%(2**self.array_size_exponent)
 
@@ -123,31 +158,34 @@ def manual_mode(bf):
             continue
         
         if user_input[0] == "!":
-            if user_input[1].lower() == "i": # insert
-                is_insert_mode = True
-                print("insertion mode activated")
-            elif user_input[1].lower() == "c": # check
-                is_insert_mode = False
-                print("check mode activated")
-            elif user_input[1].lower() == "p":
-                bf.print_filter()
-            elif user_input[1].lower() == "v":
-                bf.toggle_verbose()
-            elif user_input[1].lower() == "q":
-                break
-            else:
-                print("unknown symbol after '!' - no action executed")
+            try:
+                if user_input[1].lower() == "i": # insert
+                    is_insert_mode = True
+                    print("insertion mode activated")
+                elif user_input[1].lower() == "c": # check
+                    is_insert_mode = False
+                    print("check mode activated")
+                elif user_input[1].lower() == "p": # print
+                    bf.print_filter()
+                elif user_input[1].lower() == "v": # verbose
+                    bf.toggle_verbose()
+                elif user_input[1].lower() == "q": # quit
+                    break
+                else:
+                    print("unknown symbol after '!' - no action executed")
+                    continue
+            except IndexError:
+                print("letter after '!' expected - no action executed")
                 continue
 
-            try:
+            try: # tries switching modes and applying new item
                 item = user_input.split()[1]
-            except:
+            except IndexError:
                 continue # only switching modes, without inserting or checking
         else:
             item = user_input.split()[0]
         
         if item:
-            #print("item:", item)
             if is_insert_mode:
                 bf.insert(item)
             else:
