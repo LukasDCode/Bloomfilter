@@ -21,7 +21,7 @@ Then filter is created with a default size of 16 and set to manual & insertion m
 - ```$ !p``` prints the current bloom filter  
 - ```$ !v``` activates verbose mode  
 
-The commands can be used with an additional item, separated by space. For example switch to checking mode and directly check for some item ```!c <some_item>```  
+The commands can be used with an additional item (like seen above) separated by space. For example switching back to insertion mode and directly insert some new item: ```!i <some_item>```  
 
 
 ### More Advanced Usages
