@@ -12,8 +12,10 @@ Simple call to run the bloom filter:
 Then filter is created with a default size of 16 and set to manual & insertion mode, meaning that everything that is typed in the command line will be added to the filter.  
 
 ### Manual Mode
-```$ !c <some_item>``` activates checking mode and it checks whether ```<some_item>``` is in the filter. Everything entered in the command line from now on is checked against the content of the filter and not added to it. In order to add more items to the filter insertion mode has to be switched back on again with the following command: ```!i```  
+```$ !c <some_item>``` activates checking mode and it checks whether ```<some_item>``` is in the filter. Everything entered in the command line from now on is checked against the content of the filter and not added to it. In order to add more items to the filter insertion mode has to be switched back on again with the following command: ```$ !i```  
 
+
+This is an exhaustive list of all possible commands:  
 
 - ```$ !q``` to quit the running execution  
 - ```$ !i``` toggles insertion mode  
@@ -21,7 +23,7 @@ Then filter is created with a default size of 16 and set to manual & insertion m
 - ```$ !p``` prints the current bloom filter  
 - ```$ !v``` activates verbose mode  
 
-The commands can be used with an additional item (like seen above) separated by space. For example switching back to insertion mode and directly insert some new item: ```!i <some_item>```  
+The commands can be used with an additional item (like seen above) separated by space. For example switching back to insertion mode and directly insert some new item: ```$ !i <some_item>```  
 
 
 ### More Advanced Usages
