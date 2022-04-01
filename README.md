@@ -38,7 +38,9 @@ The code gives options for 4 additional arguments while initiating the bloom fil
 
 
 ## Hash Functions
-5 hash functions were used for both the cryptographic and the non-crpytographic mode. More hash functions can be used, they just have to be inserted into the ```switch``` and the ```verbose_switch``` of the bloom filter class, as well as their respective functions added at the bottom of the class.
+5 hash functions were used for both the cryptographic and the non-crpytographic mode. More hash functions can be used, they just have to be inserted into the ```switch``` and the ```verbose_switch``` of the bloom filter class, as well as their respective functions added at the bottom of the class.  
+
+When the amount of hash functions is specified with the ```--num_func``` argument, the hash functions get chosen from the top down. 
 
 ### Cryptographic Hash Functions
 - MD5
