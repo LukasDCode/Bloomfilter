@@ -198,6 +198,7 @@ def manual_mode(bf):
             print("no useful input detected")
 
 
+#TODO implement automatic mode
 def automatic_mode(bf):
     print("automatic mode is currently not implemented, try again without the '--auto' tag")
 
