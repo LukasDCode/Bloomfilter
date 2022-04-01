@@ -9,11 +9,11 @@ Then filter is created with a default size of 16 and set to manual & insertion m
 ```$ !c <some_item>``` activates checking mode and it checks whether ```<some_item>``` is in the filter. Everything entered in the command line from now on is checked against the content of the filter and not added to it. In order to add more items to the filter insertion mode has to be switched back on again with the following command: ```!i```  
 
 
-```$ !q``` is used to quit  
-```$ !i``` toggles insertion mode  
-```$ !c``` toggles checking mode  
-```$ !p``` prints the current bloom filter  
-```$ !v``` activates verbose mode  
+- ```$ !q``` is used to quit  
+- ```$ !i``` toggles insertion mode  
+- ```$ !c``` toggles checking mode  
+- ```$ !p``` prints the current bloom filter  
+- ```$ !v``` activates verbose mode  
 
 
 
