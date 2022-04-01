@@ -1,5 +1,5 @@
-# Bloomfilter
-Personal implementation of a bloomfilter.
+# Bloom Filter
+Personal implementation of a bloom filter.
 
 
 ## Install
@@ -17,7 +17,7 @@ Then filter is created with a default size of 16 and set to manual & insertion m
 
 This is an exhaustive list of all possible commands:  
 
-- ```$ !q``` to quit the running execution  
+- ```$ !q``` quit the running execution  
 - ```$ !i``` toggles insertion mode  
 - ```$ !c``` toggles checking mode  
 - ```$ !p``` prints the current bloom filter  
@@ -35,3 +35,25 @@ The code gives options for 4 additional arguments while initiating the bloom fil
 - ```--crypto``` activates a toggle to use cryptographic hash functions instead of non-cryptographic ones.  
 - ```--auto``` runs the script in an automatic mode. it inserts and checks for values automatically to compare different hash functions against each other.  
 
+
+
+## Hash Functions
+5 hash functions were used for both the cryptographic and the non-crpytographic mode. More hash functions can be used, they just have to be inserted into the ```switch``` and the ```verbose_switch``` of the bloom filter class, as well as their respective functions added at the bottom of the class.
+
+### Cryptographic Hash Functions
+- MD5
+- BLAKE2S
+- SHA256
+- SHA512
+- SHA3-256
+
+Information about them can be found [here](https://cryptobook.nakov.com/cryptographic-hash-functions/secure-hash-algorithms).
+
+### Non-Cryptographic Hash Functions
+- Murmur
+- FNV
+- Jenkins
+- Pearson
+- Hex-value
+
+Information about them can be found [here](https://en.wikipedia.org/wiki/Category:Hash_function_(non-cryptographic))
