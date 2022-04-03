@@ -1,6 +1,10 @@
-from bitarray import bitarray
-import argparse
+import time
+import random
 import hashlib
+import argparse
+from bitarray import bitarray
+from tqdm import tqdm
+
 
 # non-cryptographic hash functions
 import mmh3 #https://pypi.org/project/mmh3/
@@ -9,8 +13,8 @@ import jenkins_cffi as jenkins #https://github.com/what-studio/jenkins-cffi/
 from pearhash import PearsonHasher #https://github.com/ze-phyr-us/pearhash
 
 
-crypto_hash_list = ["md5", "blake2s", "sha256", "sha512", "sha3-256"] #md5, sha
-non_crpyto_hash_list = ["murmur", "fnv", "jenkins", "pearson", "hex"] # fnv = fowler-noll-vo
+# currently only 5 hash functions implemented for both cryptographic and non-cryptographic hashes
+max_num_hash_functions = 5 
 
 
 class bloom_filter:
@@ -19,7 +23,7 @@ class bloom_filter:
     m = size of the bloom filter
     n = # of items inserted into the filter
     """
-    verbose = False
+    verbose = False #False
 
     def __init__(self, array_size_exponent=4, num_hash_functions=3, is_cryptographic=False):
         self.filter_array = bitarray([0] * 2**array_size_exponent)
@@ -30,14 +34,14 @@ class bloom_filter:
         self.pearson_hasher = PearsonHasher(self.array_size_exponent) 
 
         if is_cryptographic: #TODO insert cryptographic hash functions
-            self.switch = {
+            self.hash_func_switch = {
                 0: self.get_md5,
                 1: self.get_blake2s,
                 2: self.get_sha256,
                 3: self.get_sha512,
                 4: self.get_sha3_256
             }
-            self.verbose_switch = {
+            self.hash_name_switch = {
                 0: "MD5     ",
                 1: "BLAKE2s ",
                 2: "SHA256  ",
@@ -45,14 +49,14 @@ class bloom_filter:
                 4: "SHA3-256"
             }
         else:
-            self.switch = {
+            self.hash_func_switch = {
                 0: self.get_murmur,
                 1: self.get_fnv,
                 2: self.get_jenkins,
                 3: self.get_pearson,
                 4: self.get_hex
             }
-            self.verbose_switch = {
+            self.hash_name_switch = {
                 0: "Murmur  ",
                 1: "FNV     ",
                 2: "Jenkins ",
@@ -71,15 +75,15 @@ class bloom_filter:
 
     def insert(self, item):
         for hash_f_index in range(self.num_hash_functions):
-            cell_position = self.switch[hash_f_index](item)
-            if bloom_filter.verbose: print(self.verbose_switch[hash_f_index], cell_position)
+            cell_position = self.hash_func_switch[hash_f_index](item)
+            if bloom_filter.verbose: print(self.hash_name_switch[hash_f_index], cell_position)
             self.filter_array[cell_position] = 1
 
     def check(self, item):
         if bloom_filter.verbose: print("check", item)
         for hash_f_index in range(self.num_hash_functions):
-            cell_position = self.switch[hash_f_index](item)
-            if bloom_filter.verbose: print(self.verbose_switch[hash_f_index], cell_position)
+            cell_position = self.hash_func_switch[hash_f_index](item)
+            if bloom_filter.verbose: print(self.hash_name_switch[hash_f_index], cell_position)
             if not self.filter_array[cell_position]: return False
         return True
 
@@ -198,36 +202,82 @@ def manual_mode(bf):
             print("no useful input detected")
 
 
-#TODO implement automatic mode
-def automatic_mode(bf):
-    print("automatic mode is currently not implemented, try again without the '--auto' tag")
+# slightly modified, taken from here: https://stackoverflow.com/a/44884041
+def get_x_random_elements_from_list(original_list, num_elements):
+    num_elements = min(len(original_list), max(1, num_elements))
+    to_keep = set(random.sample(range(len(original_list)), num_elements))
+    return [x for i,x in enumerate(original_list) if i in to_keep]
 
 
-def main(filter_size_exponent, num_hash_functions, cryptographic_hash_functions=False, is_automatic_mode=False): # 2**4=16, 2**8=256
-    bf = bloom_filter(filter_size_exponent, num_hash_functions, cryptographic_hash_functions)
+def automatic_mode(args):
+    """
+    Automatic modes creates 100 bloom filter of size 2^16,
+    fills each of them with 2500 items and checks each of them for another 2000 items.
+    From the 2000 items it checks it will use 1000 of which have been inserted before
+    and another 1000 which the filter has not seen before.
+    This is done to also check for interdependencies between the hash functions.
+    """
+    size_bloom_filter = 20 #16 # 2^16= 65536 # 2^20 = 1048576
+    num_bloom_filter = 1000 #100
+    num_items_to_insert = 50000 #2500 # max of 104k
+    num_known_items = 25000 #1000
+    num_unknown_items = 25000 #1000
+    
+    try:
+        word_file = "/usr/share/dict/words"
+        word_list = open(word_file).read().splitlines()
+        items_to_insert = get_x_random_elements_from_list(word_list, num_items_to_insert)
+    except:
+        # if not executed on a unix system, ascending numbers as Strings will be inserted
+        items_to_insert = [str(i) for i in range(num_items_to_insert)]
 
-    if is_automatic_mode:
-        automatic_mode(bf)
+    start_time = time.time()
+    false_positive_counter = 0
+    for _ in tqdm(range(num_bloom_filter)):
+        bf = bloom_filter(size_bloom_filter, args.num_func, args.crypto)
+        
+        # fill filter with items
+        for item in items_to_insert:
+            bf.insert(item)
+        
+        # check known items
+        known_items = get_x_random_elements_from_list(items_to_insert, num_known_items)
+        for item in known_items:
+            item_included = bf.check(item)
+            if not item_included:
+                print("This is really suspicious.", item, "should be included in the filter.")
+
+        # check unknown items
+        unknown_items = get_x_random_elements_from_list(word_list, num_unknown_items)
+        for item in unknown_items:
+            # add a salt to make sure none of the items are the same as the known_items list
+            item_included = bf.check(item+"xy")
+            if item_included:
+                false_positive_counter += 1
+    
+    end_time = time.time()
+    false_positive_avg = (false_positive_counter / (num_bloom_filter * num_unknown_items))*100
+
+    print("Execution took:          ", end_time - start_time, "seconds")
+    print("False Positive average of", false_positive_avg, "% - total amount of", false_positive_counter, "False Positives")
+    
+
+def main(args):
+    if args.auto:
+        automatic_mode(args)
     else:
+        bf = bloom_filter(args.size, args.num_func, args.crypto)
         manual_mode(bf)
 
 
 def sanitize_arguments(args):
-    if args.crypto:
-        if args.num_func < 1:
-            print("at least one hash function should be used, value set to 1")
-            args.num_func = 1
-        elif args.num_func > len(crypto_hash_list):
-            print("not enough hash functions available, value set to the max of", len(crypto_hash_list))
-            args.num_func = len(crypto_hash_list)
-    else:
-        if args.num_func < 1:
-            print("at least one hash function should be used, value set to 1")
-            args.num_func = 1
-        elif args.num_func > len(non_crpyto_hash_list):
-            print("not enough hash functions available, value set to the max of", len(non_crpyto_hash_list))
-            args.num_func = len(non_crpyto_hash_list)
-
+    if args.num_func < 1:
+        print("at least one hash function should be used, value set to 1")
+        args.num_func = 1
+    elif args.num_func > max_num_hash_functions:
+        print("not enough hash functions available, value set to the max of", max_num_hash_functions)
+        args.num_func = max_num_hash_functions
+    
     if args.size < 2: # lower limit is set, because a bloom filter with 2 entries makes very little sense
         print("size restriction, needs to be bigger, now set to 2**2 = 4 Bits")
         args.size = 2
@@ -247,4 +297,5 @@ if __name__ == "__main__":
     parser.add_argument('--crypto', action='store_true', help='cryptographic or non-cryptographic hash functions toggle')
     parser.add_argument('--auto', action='store_true', help='automatic or manual mode toggle')
     args = sanitize_arguments(parser.parse_args())
-    main(filter_size_exponent=args.size, num_hash_functions=args.num_func, cryptographic_hash_functions=args.crypto, is_automatic_mode=args.auto)
+    main(args)
+    #main(filter_size_exponent=args.size, num_hash_functions=args.num_func, use_cryptographic_hash_functions=args.crypto, is_automatic_mode=args.auto)
