@@ -33,7 +33,7 @@ class bloom_filter:
         # only instanciate once for (non-cryptographic) Pearson-hash
         self.pearson_hasher = PearsonHasher(self.array_size_exponent) 
 
-        if is_cryptographic: #TODO insert cryptographic hash functions
+        if is_cryptographic:
             self.hash_func_switch = {
                 0: self.get_md5,
                 1: self.get_blake2s,
@@ -50,11 +50,11 @@ class bloom_filter:
             }
         else:
             self.hash_func_switch = {
-                0: self.get_murmur,
+                4: self.get_murmur,
                 1: self.get_fnv,
                 2: self.get_jenkins,
                 3: self.get_pearson,
-                4: self.get_hex
+                0: self.get_hex
             }
             self.hash_name_switch = {
                 0: "Murmur  ",
@@ -251,7 +251,8 @@ def automatic_mode(args):
         unknown_items = get_x_random_elements_from_list(word_list, num_unknown_items)
         for item in unknown_items:
             # add a salt to make sure none of the items are the same as the known_items list
-            item_included = bf.check(item+"xy")
+            #item_included = bf.check(item+"xy")
+            item_included = bf.check(item)
             if item_included:
                 false_positive_counter += 1
     
@@ -298,4 +299,4 @@ if __name__ == "__main__":
     parser.add_argument('--auto', action='store_true', help='automatic or manual mode toggle')
     args = sanitize_arguments(parser.parse_args())
     main(args)
-    #main(filter_size_exponent=args.size, num_hash_functions=args.num_func, use_cryptographic_hash_functions=args.crypto, is_automatic_mode=args.auto)
+    
