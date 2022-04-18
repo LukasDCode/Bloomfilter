@@ -3,8 +3,10 @@ Personal implementation of a bloom filter.
 
 
 ## Install
-The python packages for the hash functions have to be installed manually.  
-
+The following python packages for the non-cryptographic hash functions have to be installed manually:  
+```
+pip install mmh3 fnvhash jenkins-cffi pearhash
+```
 
 ## How to Use
 Simple call to run the bloom filter:  
