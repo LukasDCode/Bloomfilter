@@ -10,7 +10,9 @@ pip install mmh3 fnvhash jenkins-cffi pearhash
 
 ## How to Use
 Simple call to run the bloom filter:  
-```$ python bloom.py```  
+```
+python bloom.py
+```  
 Then filter is created with all default parameters.  
 Size of 16 (= 2^4), set to manual & insertion mode, meaning that everything that is typed in the command line will be added to the filter, and with the use of non-cryptographic hash functions.
 
