@@ -50,11 +50,11 @@ class bloom_filter:
             }
         else:
             self.hash_func_switch = {
-                4: self.get_murmur,
+                0: self.get_murmur,
                 1: self.get_fnv,
                 2: self.get_jenkins,
                 3: self.get_pearson,
-                0: self.get_hex
+                4: self.get_hex
             }
             self.hash_name_switch = {
                 0: "Murmur  ",
