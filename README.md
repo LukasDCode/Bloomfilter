@@ -36,10 +36,10 @@ The commands can be used with an additional item (like seen above) separated by 
 The code gives options for 4 additional arguments while initiating the bloom filter.  
 ```$ python bloom.py --size <int> --num_func <int> --crypto --auto```  
   
-- ```--size <int>``` allows to specify the exponent to the base of 2 to create the bloom filter. (Example: size = 6 --> total size 2^6 = 64). This is a design choice, because the exponent is also used internally.  
-- ```--num_func <int>``` allows to specify the number of hash functions that should be used for insertion & checking of items (max of 5 and min of 1).  
-- ```--crypto``` activates a toggle to use cryptographic hash functions instead of non-cryptographic ones.  
-- ```--auto``` runs the script in an automatic mode. it inserts and checks for values automatically to compare different hash functions against each other.  
+- ```--size <int>``` or ```-s <int>``` allows to specify the exponent to the base of 2 to create the bloom filter. (Example: size = 6 --> total size 2^6 = 64). This is a design choice, because the exponent is also used internally.  
+- ```--num_func <int>``` or ```-n <int>``` allows to specify the number of hash functions that should be used for insertion & checking of items (max of 5 and min of 1).  
+- ```--crypto``` or ```-c``` activates a toggle to use cryptographic hash functions instead of non-cryptographic ones.  
+- ```--auto``` or ```-a``` runs the script in an automatic mode. it inserts and checks for values automatically to compare different hash functions against each other.  
 
 
 
