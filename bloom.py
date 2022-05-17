@@ -293,10 +293,10 @@ def sanitize_arguments(args):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--size', type=int, default=4, help='exponent size of the bloom filter')
-    parser.add_argument('--num_func', type=int, default=3, help='number of hash functions to be used')
-    parser.add_argument('--crypto', action='store_true', help='cryptographic or non-cryptographic hash functions toggle')
-    parser.add_argument('--auto', action='store_true', help='automatic or manual mode toggle')
+    parser.add_argument('-s', '--size', type=int, default=4, help='exponent size of the bloom filter')
+    parser.add_argument('-n', '--num_func', type=int, default=3, help='number of hash functions to be used')
+    parser.add_argument('-c', '--crypto', action='store_true', help='cryptographic or non-cryptographic hash functions toggle')
+    parser.add_argument('-a', '--auto', action='store_true', help='automatic or manual mode toggle')
     args = sanitize_arguments(parser.parse_args())
     main(args)
     
