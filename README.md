@@ -64,4 +64,4 @@ Information about them can be found [here](https://cryptobook.nakov.com/cryptogr
 - Pearson
 - Hex-value
 
-Information about them can be found [here](https://en.wikipedia.org/wiki/Category:Hash_function_(non-cryptographic))
+Information about them can be found [here](https://en.wikipedia.org/wiki/Category:Hash_function_(non-cryptographic)).
