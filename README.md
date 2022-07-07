@@ -66,3 +66,10 @@ Information about them can be found [here](https://cryptobook.nakov.com/cryptogr
 - Hex-value
 
 Information about them can be found [here](https://en.wikipedia.org/wiki/Category:Hash_function_(non-cryptographic)).
+
+
+## Minibloom.py
+The ```minibloom.py``` file is a personal implementation to try out the maximal way of compressing the file, but still keeping the majority of the functionality. Arguments, verbose-mode and printing are completely disregarded. The file consists of 105 lines of code including 3 lines of imports.
+
+## Nanobloom.py
+The ```nanobloom.py``` file is a personal implementation to try out the maximal way of compressing the file and only keeping the manual mode. The automatic mode is completely removed, like the argument parser and printing options. Prints are kept to a minimum.
