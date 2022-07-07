@@ -1,5 +1,6 @@
 # Bloom Filter
-Personal implementation of a bloom filter.
+Personal implementation of a bloom filter. The normal script is the ```bloom.py``` file.  
+The ```minibloom.py``` provides the basic bloom filter functionality, but in a highly compressed version.
 
 
 ## Install
