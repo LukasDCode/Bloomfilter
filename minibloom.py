@@ -12,13 +12,6 @@ class bloom_filter:
             3: self.get_sha512,
             4: self.get_sha3_256
         }
-        self.hash_name_switch = {
-            0: "MD5     ",
-            1: "BLAKE2s ",
-            2: "SHA256  ",
-            3: "SHA512  ",
-            4: "SHA3-256"
-        }
 
     def insert(self, item):
         for hash_f_index in range(len(self.hash_func_switch)):
@@ -69,7 +62,7 @@ def manual_mode():
                     print("unknown symbol after '!' - no action executed")
                     continue
             except IndexError:
-                print("letter after '!' expected - no action executed")
+                print("symbol after '!' expected - no action executed")
                 continue
             try: item = user_input.split()[1] # tries switching modes and applying new item  
             except IndexError: continue # only switching modes, without inserting or checking

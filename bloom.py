@@ -179,7 +179,7 @@ def manual_mode(bf):
                     print("unknown symbol after '!' - no action executed")
                     continue
             except IndexError:
-                print("letter after '!' expected - no action executed")
+                print("symbol after '!' expected - no action executed")
                 continue
 
             try: # tries switching modes and applying new item
