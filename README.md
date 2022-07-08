@@ -1,6 +1,8 @@
 # Bloom Filter
 Personal implementation of a bloom filter. The normal script is the ```bloom.py``` file.  
-The ```minibloom.py``` provides the basic bloom filter functionality, but in a highly compressed version.
+  
+I would like to direct the attention to the ```minibloom.py```-file, which provides the basic bloom filter functionality, but in a highly compressed version.  
+Read more about the ```minibloom.py``` at the bottom of this page.
 
 
 ## Install
@@ -72,4 +74,8 @@ Information about them can be found [here](https://en.wikipedia.org/wiki/Categor
 The ```minibloom.py``` file is a personal implementation to try out a middle ground of compressing the file, but still keeping the majority of the functionality. Arguments, verbose-mode and printing are completely disregarded. The file consists of 83 lines of code including 3 lines of imports.
 
 ## Nanobloom.py
-The ```nanobloom.py``` file is a personal implementation to try out the maximal way of compressing the file and only keeping the manual mode. The automatic mode is completely removed, like the argument parser and printing options. Prints are kept to a minimum. The entire file consists of 45 lines of code, where 2 lines are used for imports, 11 lines are for the bloom filter class, 2 lines for the main method and the remaining 30 lines are solely for the manual mode, where user input is validated and prints generated.
+The ```nanobloom.py``` file is a personal implementation to try out the maximal way of compressing the file and only keeping the manual mode. The automatic mode is completely removed, like the argument parser and printing options. Prints are kept to a minimum. The entire file consists of 45 lines of code, where 2 lines are used for imports, 11 lines are for the bloom filter class, 2 lines for the main method and the remaining 30 lines are solely for the manual mode, where user input is validated and prints generated.  
+All the magic happens in the ```bloom_filter``` class:
+
+https://github.com/LukasDCode/Bloomfilter/blob/30fd0c7e13009c36b808e875ae619701ce29485e/nanobloom.py#L4-L16
+
