@@ -69,7 +69,7 @@ Information about them can be found [here](https://en.wikipedia.org/wiki/Categor
 
 
 ## Minibloom.py
-The ```minibloom.py``` file is a personal implementation to try out the maximal way of compressing the file, but still keeping the majority of the functionality. Arguments, verbose-mode and printing are completely disregarded. The file consists of 105 lines of code including 3 lines of imports.
+The ```minibloom.py``` file is a personal implementation to try out a middle ground of compressing the file, but still keeping the majority of the functionality. Arguments, verbose-mode and printing are completely disregarded. The file consists of 83 lines of code including 3 lines of imports.
 
 ## Nanobloom.py
-The ```nanobloom.py``` file is a personal implementation to try out the maximal way of compressing the file and only keeping the manual mode. The automatic mode is completely removed, like the argument parser and printing options. Prints are kept to a minimum.
+The ```nanobloom.py``` file is a personal implementation to try out the maximal way of compressing the file and only keeping the manual mode. The automatic mode is completely removed, like the argument parser and printing options. Prints are kept to a minimum. The entire file consists of 45 lines of code, where 2 lines are used for imports, 11 lines are for the bloom filter class, 2 lines for the main method and the remaining 30 lines are solely for the manual mode, where user input is validated and prints generated.
