@@ -4,34 +4,16 @@ from bitarray import bitarray
 class bloom_filter:
     def __init__(self):
         self.filter_array = bitarray([0] * 2**20) # size=1048576
-        self.hash_func_switch = {0: self.get_md5, 1: self.get_blake2s, 2: self.get_sha256, 3: self.get_sha512, 4: self.get_sha3_256}
+        self.hash_func_switch = {0: hashlib.md5, 1: hashlib.blake2s, 2: hashlib.sha256, 3: hashlib.sha512, 4: hashlib.sha3_256}
 
     def insert(self, item):
         for hash_f_index in range(len(self.hash_func_switch)):
-            self.filter_array[self.hash_func_switch[hash_f_index](item)] = 1
+            self.filter_array[int(self.hash_func_switch[hash_f_index](item.encode("utf-8")).hexdigest(), 16)%len(self.filter_array)] = 1
 
     def check(self, item):
         for hash_f_index in range(len(self.hash_func_switch)):
-            if not self.filter_array[self.hash_func_switch[hash_f_index](item)]: return False
+            if not self.filter_array[int(self.hash_func_switch[hash_f_index](item.encode("utf-8")).hexdigest(), 16)%len(self.filter_array)]: return False
         return True
-
-    def get_md5(self, input):
-        return self.position_from_hex(hashlib.md5(input.encode("utf-8")).hexdigest())
-
-    def get_blake2s(self, input):
-        return self.position_from_hex(hashlib.blake2s(input.encode("utf-8")).hexdigest())
-
-    def get_sha256(self, input):
-        return self.position_from_hex(hashlib.sha256(input.encode("utf-8")).hexdigest())
-
-    def get_sha512(self, input):
-        return self.position_from_hex(hashlib.sha512(input.encode("utf-8")).hexdigest())
-
-    def get_sha3_256(self, input):
-        return self.position_from_hex(hashlib.sha3_256(input.encode("utf-8")).hexdigest())
-    
-    def position_from_hex(self, hex):
-        return int(hex, 16)%len(self.filter_array)
 
 def manual_mode(bf):
     is_insert_mode = True
