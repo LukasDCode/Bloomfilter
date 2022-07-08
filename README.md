@@ -1,8 +1,8 @@
 # Bloom Filter
 Personal implementation of a bloom filter. The normal script is the ```bloom.py``` file.  
   
-I would like to direct the attention to the [Nanobloom](##Nanobloom.py)-file, which provides the basic bloom filter functionality, but in a highly compressed version.  
-Read more about [Nanobloom](##Nanobloom.py) at the bottom of this page.
+I would like to direct the attention to the ```nanobloom.py``` file, which provides the basic bloom filter functionality, but in a highly compressed version.
+[Read more about Nanobloom at the bottom of this page.](##Nanobloom.py) 
 
 
 ## Install
